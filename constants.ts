@@ -43,7 +43,9 @@ export const CHARACTERS = [
  * x(t) = (m/k) * ln(cosh(sqrt(k*F_net)/m * t))
  * With m=5kg, mu=0.1, k=0.015, F=75N -> x(8) ≈ 302m.
  */
-export const INITIAL_VARIABLES: Record<string, any> = {
+import type { MotionVariables } from './types';
+
+export const INITIAL_VARIABLES: MotionVariables = {
   force: 75,           // Applied Force in Newtons (N)
   mass: 5,             // Mass in Kilograms (kg)
   friction: 0.1,       // Kinetic friction coefficient (mu)
