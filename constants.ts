@@ -1,3 +1,6 @@
+import blossomImg from './assets/blossom.png';
+import bubblesImg from './assets/bubbles.png';
+import buttercupImg from './assets/buttercup.png';
 
 export const PHYSICS = {
   GRAVITY: 9.81, // Standard Earth gravity (m/s^2)
@@ -21,19 +24,19 @@ export const CHARACTERS = [
     id: 'blossom',
     name: 'Blossom',
     color: COLORS.BLOSSOM,
-    image: './assets/blossom.png',
+    image: blossomImg,
   },
   {
     id: 'bubbles',
     name: 'Bubbles',
     color: COLORS.BUBBLES,
-    image: './assets/bubbles.png',
+    image: bubblesImg,
   },
   {
     id: 'buttercup',
     name: 'Buttercup',
     color: COLORS.BUTTERCUP,
-    image: './assets/buttercup.png',
+    image: buttercupImg,
   }
 ];
 
