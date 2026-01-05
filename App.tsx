@@ -252,16 +252,19 @@ const App: React.FC = () => {
           />
         </div>
 
-        <div className="flex-1 flex flex-col relative overflow-hidden">
-          <div className="flex-1 min-h-0 relative">
-            <SimulationCanvas 
-              objects={objects} 
-              maxDistance={globalVars.maxDistance}
-              globalFriction={0} 
-              globalDrag={0}
-            />
-            
-            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-full max-w-fit px-4">
+        <div className="flex-1 flex flex-col relative">
+          <div className="flex-1 min-h-0 relative p-2 sm:p-4">
+            <div className="sim-canvas-container w-full h-[60vh] sm:h-[65vh] md:h-[72vh] lg:h-[78vh] rounded-xl overflow-hidden relative">
+              <SimulationCanvas 
+                objects={objects} 
+                maxDistance={globalVars.maxDistance}
+                globalFriction={0} 
+                globalDrag={0}
+                onTap={toggleSimulation}
+              />
+            </div>
+
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-full max-w-fit px-4 hidden lg:flex">
               <div className="flex items-center gap-6">
                  <ControlBar 
                   status={status}
@@ -279,6 +282,11 @@ const App: React.FC = () => {
               <div className="bg-slate-900/50 backdrop-blur text-[9px] font-black text-slate-500 uppercase tracking-widest px-3 py-1.5 rounded-full border border-slate-800">
                 <i className="fas fa-microscope mr-2"></i> Lab ready: 1m = 10px
               </div>
+            </div>
+
+            {/* Mobile fixed control bar */}
+            <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-3">
+              <ControlBar status={status} onToggle={toggleSimulation} onReset={resetSimulation} />
             </div>
           </div>
         </div>

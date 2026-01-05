@@ -8,6 +8,7 @@ interface SimulationCanvasProps {
   maxDistance: number;
   globalFriction: number;
   globalDrag: number;
+  onTap?: () => void;
 }
 
 interface ImpactPulse {
@@ -21,7 +22,8 @@ const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   objects, 
   maxDistance, 
   globalFriction,
-  globalDrag 
+  globalDrag,
+  onTap
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,32 +55,49 @@ const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let animationFrameId: number;
+
+    const resizeCanvas = () => {
+      const container = containerRef.current;
+      if (!container || !canvas) return;
+
+      const dpr = Math.max(window.devicePixelRatio || 1, 1);
+      const width = Math.max(300, Math.floor(container.clientWidth));
+      const height = Math.max(240, Math.floor(container.clientHeight));
+
+      if (canvas.width !== Math.floor(width * dpr) || canvas.height !== Math.floor(height * dpr)) {
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+    };
 
     const render = () => {
       const container = containerRef.current;
       if (!container) return;
 
-      if (canvas.width !== container.clientWidth || canvas.height !== container.clientHeight) {
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
-      }
+      resizeCanvas();
 
       // Background - Professional Lab Slate
       ctx.fillStyle = '#020617';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
 
       const currentMaxDist = maxDistanceRef.current;
       const currentObjects = objectsRef.current;
 
-      const trackMarginY = canvas.height < 450 ? 40 : 100;
-      const trackMarginX = 60;
-      const trackHeight = (canvas.height - trackMarginY * 2) / 3;
-      const trackWidth = canvas.width - trackMarginX * 2;
-      const pixelsPerMeter = trackWidth / currentMaxDist;
+      const cssWidth = canvas.width / (window.devicePixelRatio || 1);
+      const cssHeight = canvas.height / (window.devicePixelRatio || 1);
+
+      const trackMarginY = cssHeight < 450 ? Math.max(24, Math.round(cssHeight * 0.06)) : Math.round(cssHeight * 0.08);
+      const trackMarginX = Math.max(32, Math.round(cssWidth * 0.05));
+      const trackHeight = Math.max(48, (cssHeight - trackMarginY * 2) / 3);
+      const trackWidth = Math.max(200, cssWidth - trackMarginX * 2);
+      const pixelsPerMeter = trackWidth / Math.max(1, currentMaxDist);
 
       // Subtle Background Grid
       ctx.strokeStyle = 'rgba(71, 85, 105, 0.05)';
@@ -160,23 +179,29 @@ const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         p.age++;
         const progress = p.age / PULSE_DURATION;
         const alpha = 1 - progress;
-        const radius = 200 * Math.pow(progress, 0.5);
+        const radius = Math.max(40, (cssWidth + cssHeight) * 0.12 * Math.pow(progress, 0.5));
         
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
         ctx.beginPath();
-        ctx.strokeStyle = `${p.color}${Math.floor(alpha * 128).toString(16).padStart(2, '0')}`;
-        ctx.lineWidth = 4 * (1 - progress);
+        // ensure hex with alpha fallback
+        const color = p.color || '#ffffff';
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = alpha * 0.9;
+        ctx.lineWidth = 6 * (1 - progress);
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.stroke();
+        ctx.globalAlpha = 1;
         ctx.restore();
       });
 
       // Character Objects
       currentObjects.forEach((obj, idx) => {
-        const yCenter = trackMarginY + idx * trackHeight + trackHeight / 2;
+        // Distribute tracks evenly and support fewer or more objects gracefully
+        const laneIndex = idx % 3;
+        const yCenter = trackMarginY + laneIndex * trackHeight + trackHeight / 2;
         const xPos = trackMarginX + obj.position * pixelsPerMeter;
-        const radius = canvas.height < 450 ? 22 : 32;
+        const radius = cssHeight < 450 ? Math.max(18, Math.round(cssHeight * 0.05)) : Math.max(28, Math.round(cssHeight * 0.07));
 
         // Reset tracking for finished state pulses
         if (obj.position === 0) pulsedSetRef.current.delete(obj.id);
@@ -207,15 +232,17 @@ const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         ctx.shadowBlur = 15;
         ctx.shadowColor = `${obj.color}88`;
         
-        // Draw Core
+        // Draw Core with subtle shadow
+        ctx.save();
+        ctx.shadowBlur = Math.max(6, Math.round(radius * 0.4));
+        ctx.shadowColor = `${obj.color}88`;
         ctx.fillStyle = obj.color;
         ctx.beginPath();
         ctx.arc(xPos, yCenter, radius, 0, Math.PI * 2);
         ctx.fill();
-        
-        ctx.shadowBlur = 0; // Reset shadow
+        ctx.restore();
 
-        // Render Clipped Image
+        // Render Clipped Image (if available)
         const charImg = imagesRef.current[obj.id];
         if (charImg?.complete) {
           ctx.save();
@@ -228,7 +255,9 @@ const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
         // Object Outer Ring
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = Math.max(2, Math.round(radius * 0.08));
+        ctx.beginPath();
+        ctx.arc(xPos, yCenter, radius + 1, 0, Math.PI * 2);
         ctx.stroke();
 
         // Simple Dashboard Overlay per character (Speed)
@@ -244,8 +273,47 @@ const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     };
 
     animationFrameId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, []);
+
+    // Resize observer and orientation change support
+    const onResize = () => resizeCanvas();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+
+    // Touch/click to call onTap if provided
+    const container = containerRef.current;
+    const ptrHandler = (ev: PointerEvent) => {
+      // Prevent interference with drags, only handle quick taps
+      if (typeof onTap === 'function') {
+        onTap();
+      }
+    };
+
+    if (container) {
+      container.addEventListener('pointerdown', ptrHandler, { passive: true });
+    }
+
+    // Resize observer for more reliable container size tracking
+    let ro: ResizeObserver | null = null;
+    if (container && (window as any).ResizeObserver) {
+      ro = new ResizeObserver(() => resizeCanvas());
+      ro.observe(container);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      if (container) container.removeEventListener('pointerdown', ptrHandler);
+      if (ro && container) ro.unobserve(container);
+    };
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      if (container) container.removeEventListener('pointerdown', ptrHandler);
+    };
+  }, [onTap]);
 
   return (
     <div ref={containerRef} className="flex-1 w-full bg-slate-950 overflow-hidden relative border-y border-slate-800 shadow-2xl">
