@@ -109,6 +109,57 @@ input[type=range]::-moz-range-thumb {
   .sim-canvas-container { height: calc(100vh - 150px); }
 }
 
+/* Landscape adjustments for mobile & tablet to better use horizontal space */
+@media (orientation: landscape) {
+  /* slightly reduced vertical height to fit controls comfortably */
+  .sim-canvas-container { height: calc(100vh - 140px) !important; min-height: 220px; }
+  /* mobile timer tweaks */
+  .mobile-timer { padding: 6px 10px; }
+  /* larger timer in landscape */
+  .mobile-timer .timer-value { font-size: 1.35rem; }
+  /* position mobile controls a little tighter to avoid overlap */
+  .mobile-controls { bottom: 8px; left: 50%; transform: translateX(-50%); }
+}
+
+/* Compact mobile timer base styling */
+.mobile-timer { display: inline-block; }
+.mobile-timer .timer-card {
+  padding: 8px 14px;
+  min-width: 120px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.mobile-timer .timer-title { color: #c7f9e6; font-size: 9px; }
+.mobile-timer .timer-value { color: #bbf7d0; font-weight: 800; }
+
+/* Fixed container placed under header to avoid overlap and use safe-area */
+.mobile-timer-fixed {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(env(safe-area-inset-top, 8px) + 56px);
+  z-index: 9999;
+  pointer-events: auto;
+  width: auto;
+}
+
+@media (orientation: portrait) {
+  .mobile-timer .timer-value { font-size: 1.05rem; }
+  .mobile-timer .timer-card { padding: 8px 12px; }
+  .mobile-timer-fixed { top: calc(env(safe-area-inset-top, 8px) + 52px); }
+}
+
+/* Larger tablets in landscape have a slightly larger canvas area */
+@media (min-width: 640px) and (orientation: landscape) {
+  .sim-canvas-container { height: calc(100vh - 120px) !important; }
+  .mobile-timer { padding: 8px 12px; }
+}
+
+/* Very wide devices keep existing LG layout */
+@media (min-width: 1024px) and (orientation: landscape) {
+  .sim-canvas-container { height: calc(100vh - 150px) !important; }
+}
+
 /* Make sure canvas occupies full container and doesn't cause scroll */
 .sim-canvas-container canvas { width: 100% !important; height: 100% !important; display: block; }
 

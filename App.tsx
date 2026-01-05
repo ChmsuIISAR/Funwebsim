@@ -228,7 +228,17 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen w-screen bg-slate-950 font-sans select-none overflow-hidden touch-none safe-p">
       <Header onToggleSidebar={() => setIsSidebarOpen(true)} />
-      
+
+    {/* Fixed mobile timer (top center) for phones & tablets */}
+    <div className="lg:hidden mobile-timer-fixed">
+      <div className="mobile-timer flex flex-col items-center">
+        <div className="timer-card bg-gradient-to-r from-emerald-700/80 to-emerald-500/70 text-white px-4 py-2 rounded-2xl border border-emerald-300/10 shadow-2xl flex flex-col items-center">
+          <span className="timer-title text-[9px] font-black uppercase tracking-[0.18em] mb-0.5 opacity-90">Physical Time</span>
+          <span className="timer-value text-xl sm:text-2xl font-mono font-black tracking-tight">{simTime.toFixed(2)}<span className="text-xs ml-1 opacity-80">s</span></span>
+        </div>
+      </div>
+    </div>
+
       <main className="flex flex-1 overflow-hidden relative lab-grid">
         {isSidebarOpen && (
           <div 
@@ -278,6 +288,8 @@ const App: React.FC = () => {
               </div>
             </div>
 
+            {/* mobile timer moved to fixed top-level element to ensure visibility on small devices */}
+
             <div className="absolute bottom-6 right-6 hidden md:block">
               <div className="bg-slate-900/50 backdrop-blur text-[9px] font-black text-slate-500 uppercase tracking-widest px-3 py-1.5 rounded-full border border-slate-800">
                 <i className="fas fa-microscope mr-2"></i> Lab ready: 1m = 10px
@@ -285,7 +297,7 @@ const App: React.FC = () => {
             </div>
 
             {/* Mobile fixed control bar */}
-            <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-3">
+            <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-3 mobile-controls">
               <ControlBar status={status} onToggle={toggleSimulation} onReset={resetSimulation} />
             </div>
           </div>
