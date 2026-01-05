@@ -228,19 +228,11 @@ const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           }
         }
 
-        // Draw Object Shadow
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = `${obj.color}88`;
-        
-        // Draw Core with subtle shadow
-        ctx.save();
-        ctx.shadowBlur = Math.max(6, Math.round(radius * 0.4));
-        ctx.shadowColor = `${obj.color}88`;
+        // Draw Core (no shadow to avoid GPU/paint overhead on lower-end devices)
         ctx.fillStyle = obj.color;
         ctx.beginPath();
         ctx.arc(xPos, yCenter, radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
 
         // Render Clipped Image (if available)
         const charImg = imagesRef.current[obj.id];
