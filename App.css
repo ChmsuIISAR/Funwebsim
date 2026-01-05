@@ -1,0 +1,100 @@
+
+/* Professional Laboratory Grid Background */
+.lab-grid {
+  background-image: 
+    linear-gradient(to right, rgba(51, 65, 85, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(51, 65, 85, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Custom scrollbar for Sidebar - ultra-slim */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.5);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Premium Range Slider Styling */
+input[type=range] {
+  -webkit-appearance: none;
+  background: transparent;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 10px;
+  border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  margin-top: -7px; /* Centers thumb on track */
+  border: 2px solid currentColor;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 5px currentColor;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+input[type=range]:active::-webkit-slider-thumb {
+  transform: scale(1.25);
+  box-shadow: 0 0 20px currentColor;
+}
+
+/* Firefox */
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 10px;
+}
+
+input[type=range]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid currentColor;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  transition: all 0.2s ease;
+}
+
+/* Utility for notch/safe areas on mobile */
+.safe-p {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.animate-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
+}

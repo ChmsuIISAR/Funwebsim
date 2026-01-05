@@ -1,0 +1,5 @@
+{
+  "name": "Funweb Motion Simulation",
+  "description": "An interactive Grade 7 physics simulator. Explore Newton's laws of motion and the relationships between force, mass, and acceleration with the Powerpuff Girls.",
+  "requestFramePermissions": []
+}
